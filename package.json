@@ -1,0 +1,19 @@
+{
+  "name": "practicaMidTerm-nunezpastranapablo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . && htmlhint index.html"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "htmlhint": "^1.9.2",
+    "vite": "^8.3.0"
+  }
+}
