@@ -1,12 +1,102 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Un juego de parejas Pokémon hecho con HTML, CSS y JavaScript." />
   <title>PokeMemory</title>
 </head>
+
 <body>
-  <main id="app"><h1>PokeMemory</h1></main>
+  <header class="cabecera">
+    <span class="pokeball" aria-hidden="true"></span>
+    <div>
+      <h1>PokeMemory</h1>
+      <p>Encuentra las parejas Pokémon</p>
+    </div>
+  </header>
+  <main>
+    <section id="seccion-perfil" class="panel perfil">
+      <h2>Crea tu perfil</h2>
+      <p>Elige tu nombre y un Pokémon que te acompañe en la partida.</p>
+      <form id="perfil-formulario" novalidate>
+        <label for="nombre-usuario">Nombre de jugador</label>
+        <input type="text" id="nombre-usuario" autocomplete="username" aria-describedby="ayuda-usuario" />
+        <small id="ayuda-usuario">Entre 3 y 15 caracteres.</small>
+        <label for="pokemon">Busca tu Pokémon favorito</label>
+        <input type="search" id="pokemon" autocomplete="off" placeholder="Por ejemplo: pikachu"
+          aria-describedby="ayuda-busqueda" />
+        <small id="ayuda-busqueda">Escribe un nombre o un número y selecciona una coincidencia.</small>
+        <p id="mensaje-busqueda" class="mensaje" role="status"></p>
+        <ul id="resultados-pokemon" class="resultados" aria-label="Coincidencias de Pokémon"></ul>
+        <div id="pokemon-seleccionado" class="favorito" hidden>
+          <img id="imagen-seleccionada" alt="" width="90" height="90" />
+          <div><small>Tu Pokémon favorito</small>
+            <p id="nombre-seleccionado" class="nombre-pokemon"></p>
+          </div>
+        </div>
+        <p id="mensaje-perfil" class="mensaje" role="status"></p>
+        <button type="submit" id="crear">Crear perfil y jugar</button>
+      </form>
+    </section>
+    <div id="pantalla-juego" hidden>
+      <section class="panel jugador" aria-label="Perfil del jugador">
+        <div class="favorito">
+          <img id="imagen-jugador" alt="" width="72" height="72" />
+          <div>
+            <h2 id="nombre-jugador"></h2>
+            <p>Favorito: <span id="favorito-jugador" class="nombre-pokemon"></span></p>
+          </div>
+        </div>
+        <button type="button" id="cerrar-sesion" class="secundario">Cerrar sesión</button>
+      </section>
+      <section id="seccion-juego" class="panel">
+        <h2>Vamos a jugar</h2>
+        <p>Descubre dos cartas. Si son iguales, la pareja se queda visible.</p>
+        <form id="partida-formulario" class="controles" novalidate>
+          <div>
+            <label for="numero-cartas">Número de cartas</label>
+            <input type="number" id="numero-cartas" value="12" min="10" max="20" step="2"
+              aria-describedby="ayuda-cartas" />
+            <small id="ayuda-cartas">Un número entero y par, entre 10 y 20 cartas.</small>
+          </div>
+          <button type="submit" id="iniciar">Iniciar partida</button>
+          <button type="button" id="reiniciar" class="secundario" disabled>Reiniciar partida</button>
+        </form>
+        <p id="mensaje-juego" class="mensaje" role="status">Elige el número de cartas para empezar.</p>
+        <div class="marcador" aria-label="Estado de la partida">
+          <p>Tiempo: <strong id="temporizador">0m 0s</strong></p>
+          <p>Parejas: <strong id="parejas">0 / 0</strong></p>
+        </div>
+        <div id="tablero" class="tablero" aria-label="Tablero de Memory"></div>
+      </section>
+      <section id="seccion-ranking" class="panel">
+        <h2>Ranking</h2>
+        <p>Primero, más cartas. Si hay empate, gana el menor tiempo.</p>
+        <p id="mensaje-ranking" class="mensaje" role="status"></p>
+        <div class="tabla-contenedor">
+          <table>
+            <caption class="solo-lectores">Resultados de las partidas completadas</caption>
+            <thead>
+              <tr>
+                <th scope="col">Posición</th>
+                <th scope="col">Jugador</th>
+                <th scope="col">Pokémon</th>
+                <th scope="col">Tiempo</th>
+                <th scope="col">Cartas</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-cuerpo"></tbody>
+          </table>
+        </div>
+        <button type="button" id="ver-ranking" class="secundario" hidden>Ver todos los resultados</button>
+      </section>
+    </div>
+  </main>
+  <footer>Práctica de JavaScript · Datos de <a href="https://pokeapi.co/">PokeAPI</a></footer>
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>
