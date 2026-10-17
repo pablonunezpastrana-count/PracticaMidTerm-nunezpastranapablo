@@ -1,16 +1,30 @@
 import "./styles.css";
+import { iniciarPerfil } from "./components/profile.js";
 
-document.getElementById("mensaje-perfil").textContent = "Estamos preparando el formulario de jugador.";
+const seccionPerfil = document.getElementById("seccion-perfil");
+const pantallaJuego = document.getElementById("pantalla-juego");
 
-import apiConnect from "./api/pokeApi.js";
-
-async function probarAPI() {
-    try {
-        const pokemon = await apiConnect("pikachu");
-        console.log(pokemon);
-    } catch (error) {
-        console.error("Error al conectar:", error);
-    }
+function entrarAlJuego(usuario) {
+  seccionPerfil.hidden = true;
+  pantallaJuego.hidden = false;
+  document.getElementById("nombre-jugador").textContent = usuario.nombre;
+  document.getElementById("favorito-jugador").textContent = usuario.pokemon.nombre;
+  const imagen = document.getElementById("imagen-jugador");
+  imagen.src = usuario.pokemon.imagen;
+  imagen.alt = usuario.pokemon.nombre;
 }
 
-probarAPI();
+iniciarPerfil((usuario) => {
+  entrarAlJuego(usuario);
+});
+
+document.getElementById("cerrar-sesion").addEventListener("click", () => {
+  pantallaJuego.hidden = true;
+  seccionPerfil.hidden = false;
+});
+
+
+
+document.getElementById("seccion-juego").hidden = true;
+document.getElementById("seccion-ranking").hidden = true;
+
