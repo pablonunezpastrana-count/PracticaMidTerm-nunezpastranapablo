@@ -1,4 +1,4 @@
-import apiConnect from "../api/pokeApi.js";
+import apiConnect, { obtenerListaPokemon } from "../api/pokeApi.js";
 
 export function crearPerfil(username, pokemon) {
   const nombre = username.trim();
@@ -21,41 +21,72 @@ export function iniciarPerfil(alCrear) {
   const seleccion = document.getElementById("pokemon-seleccionado");
   let favorito = null;
   let numeroBusqueda = 0;
+  let esperaBusqueda = null;
 
-  pokemonInput.addEventListener("change", async () => {
-    const busquedaActual = ++numeroBusqueda;
+  async function seleccionarPokemon(nombre, numeroActual) {
+    mensajeBusqueda.textContent = "Cargando Pokémon...";
+    try {
+      const pokemon = await apiConnect(nombre);
+      if (numeroActual !== numeroBusqueda) return;
+      favorito = pokemon;
+      pokemonInput.value = pokemon.nombre;
+      resultados.replaceChildren();
+      document.getElementById("nombre-seleccionado").textContent = pokemon.nombre;
+      const imagen = document.getElementById("imagen-seleccionada");
+      imagen.src = pokemon.imagen;
+      imagen.alt = pokemon.nombre;
+      seleccion.hidden = false;
+      mensajeBusqueda.textContent = "Pokémon seleccionado. Puedes buscar otro para cambiarlo.";
+      mensajePerfil.textContent = "";
+    } catch (error) {
+      if (numeroActual !== numeroBusqueda) return;
+      mensajeBusqueda.textContent = `${error.message} Inténtalo de nuevo.`;
+    }
+  }
+
+  async function buscarPokemon(consulta, numeroActual) {
+    mensajeBusqueda.textContent = "Buscando...";
+    try {
+      const lista = await obtenerListaPokemon();
+      if (numeroActual !== numeroBusqueda) return;
+      const coincidencias = lista.filter((pokemon) =>
+        pokemon.nombre.includes(consulta) || String(pokemon.id) === consulta).slice(0, 10);
+      resultados.replaceChildren();
+      for (const pokemon of coincidencias) {
+        const elemento = document.createElement("li");
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.textContent = `${pokemon.nombre} (#${pokemon.id})`;
+        boton.addEventListener("click", () => {
+          numeroBusqueda++;
+          favorito = null;
+          seleccion.hidden = true;
+          seleccionarPokemon(pokemon.nombre, numeroBusqueda);
+        });
+        elemento.append(boton);
+        resultados.append(elemento);
+      }
+      mensajeBusqueda.textContent = coincidencias.length
+        ? "Selecciona uno de estos Pokémon."
+        : "No hay coincidencias. Prueba con otro nombre o número.";
+    } catch (error) {
+      if (numeroActual !== numeroBusqueda) return;
+      mensajeBusqueda.textContent = `${error.message} Revisa la conexión y vuelve a escribir.`;
+    }
+  }
+
+  pokemonInput.addEventListener("input", () => {
+    numeroBusqueda++;
+    const numeroActual = numeroBusqueda;
+    clearTimeout(esperaBusqueda);
     favorito = null;
     seleccion.hidden = true;
     resultados.replaceChildren();
-    const consulta = pokemonInput.value.trim();
-    if (!consulta) {
-      mensajeBusqueda.textContent = "";
-      return;
-    }
-    mensajeBusqueda.textContent = "Buscando Pokémon por nombre completo o número...";
-    try {
-      const pokemon = await apiConnect(consulta);
-      if (busquedaActual !== numeroBusqueda) return;
-      const elemento = document.createElement("li");
-      const boton = document.createElement("button");
-      boton.type = "button";
-      boton.textContent = pokemon.nombre;
-      boton.addEventListener("click", () => {
-        favorito = pokemon;
-        document.getElementById("nombre-seleccionado").textContent = pokemon.nombre;
-        const imagen = document.getElementById("imagen-seleccionada");
-        imagen.src = pokemon.imagen;
-        imagen.alt = pokemon.nombre;
-        seleccion.hidden = false;
-        mensajeBusqueda.textContent = "Pokémon seleccionado.";
-        resultados.replaceChildren();
-      });
-      elemento.append(boton);
-      resultados.append(elemento);
-      mensajeBusqueda.textContent = "Pulsa el resultado para seleccionarlo.";
-    } catch (error) {
-      if (busquedaActual !== numeroBusqueda) return;
-      mensajeBusqueda.textContent = error.message;
+    mensajePerfil.textContent = "";
+    mensajeBusqueda.textContent = "";
+    const consulta = pokemonInput.value.trim().toLowerCase();
+    if (consulta) {
+      esperaBusqueda = setTimeout(() => buscarPokemon(consulta, numeroActual), 250);
     }
   });
 
@@ -66,12 +97,18 @@ export function iniciarPerfil(alCrear) {
       mensajePerfil.textContent = resultado.message;
       return;
     }
-    alCrear(resultado.usuario);
-    formulario.reset();
-    favorito = null;
-    seleccion.hidden = true;
-    resultados.replaceChildren();
-    mensajeBusqueda.textContent = "";
-    mensajePerfil.textContent = "";
+    try {
+      alCrear(resultado.usuario);
+      formulario.reset();
+      favorito = null;
+      seleccion.hidden = true;
+      resultados.replaceChildren();
+      mensajeBusqueda.textContent = "";
+      mensajePerfil.textContent = "";
+    } catch (error) {
+      mensajePerfil.textContent = "No se pudo guardar el perfil. Permite el almacenamiento del navegador.";
+      console.error(error);
+    }
   });
 }
+

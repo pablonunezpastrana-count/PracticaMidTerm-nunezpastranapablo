@@ -27,4 +27,3 @@ document.getElementById("cerrar-sesion").addEventListener("click", () => {
 
 document.getElementById("seccion-juego").hidden = true;
 document.getElementById("seccion-ranking").hidden = true;
-
