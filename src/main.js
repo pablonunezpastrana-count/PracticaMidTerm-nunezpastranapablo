@@ -1,5 +1,6 @@
 import "./styles.css";
 import { iniciarPerfil } from "./components/profile.js";
+import { prepararJuego, cancelarPartida } from "./components/game.js";
 import {
   guardarUsuarioEnSesion,
   obtenerUsuarioDeSesion,
@@ -17,6 +18,7 @@ function entrarAlJuego(usuario) {
   const imagen = document.getElementById("imagen-jugador");
   imagen.src = usuario.pokemon.imagen;
   imagen.alt = usuario.pokemon.nombre;
+  prepararJuego(usuario);
 }
 
 iniciarPerfil((usuario) => {
@@ -25,6 +27,7 @@ iniciarPerfil((usuario) => {
 });
 
 document.getElementById("cerrar-sesion").addEventListener("click", () => {
+  cancelarPartida();
   eliminarUsuarioDeSesion();
   pantallaJuego.hidden = true;
   seccionPerfil.hidden = false;
@@ -36,5 +39,4 @@ if (usuarioSesion) {
 }
 
 
-document.getElementById("seccion-juego").hidden = true;
 document.getElementById("seccion-ranking").hidden = true;
