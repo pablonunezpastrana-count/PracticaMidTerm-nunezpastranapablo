@@ -1,5 +1,10 @@
 import "./styles.css";
 import { iniciarPerfil } from "./components/profile.js";
+import {
+  guardarUsuarioEnSesion,
+  obtenerUsuarioDeSesion,
+  eliminarUsuarioDeSesion,
+} from "./servicios/session.js";
 
 const seccionPerfil = document.getElementById("seccion-perfil");
 const pantallaJuego = document.getElementById("pantalla-juego");
@@ -15,14 +20,20 @@ function entrarAlJuego(usuario) {
 }
 
 iniciarPerfil((usuario) => {
+  guardarUsuarioEnSesion(usuario);
   entrarAlJuego(usuario);
 });
 
 document.getElementById("cerrar-sesion").addEventListener("click", () => {
+  eliminarUsuarioDeSesion();
   pantallaJuego.hidden = true;
   seccionPerfil.hidden = false;
 });
 
+const usuarioSesion = obtenerUsuarioDeSesion();
+if (usuarioSesion) {
+  entrarAlJuego(usuarioSesion);
+}
 
 
 document.getElementById("seccion-juego").hidden = true;
