@@ -13,6 +13,8 @@ let parejasEncontradas = 0;
 let descubiertas = [];
 let bloqueado = false;
 let terminada = true;
+let inicio = 0;
+let temporizador = null;
 let esperaCartas = null;
 
 export function prepararJuego() {
@@ -22,7 +24,9 @@ export function prepararJuego() {
 
 export function cancelarPartida() {
   numeroPartida++;
+  clearInterval(temporizador);
   clearTimeout(esperaCartas);
+  temporizador = null;
   esperaCartas = null;
   descubiertas = [];
   parejasEncontradas = 0;
@@ -42,6 +46,10 @@ export function validarNumeroCartas(valor) {
   return "";
 }
 
+function segundosTranscurridos() {
+  return Math.floor((Date.now() - inicio) / 1000);
+}
+
 async function iniciarPartida(numeroCartas) {
   cancelarPartida();
   cartasPartida = numeroCartas;
@@ -53,6 +61,10 @@ async function iniciarPartida(numeroCartas) {
     const cartas = mezclar([...pokemon, ...pokemon]);
     cartas.forEach((datos, indice) => crearCarta(datos, indice));
     terminada = false;
+    inicio = Date.now();
+    temporizador = setInterval(() => {
+      reloj.textContent = formatearTiempo(segundosTranscurridos());
+    }, 1000);
     contadorParejas.textContent = `0 / ${numeroCartas / 2}`;
     mensaje.textContent = "¡Partida en marcha! Encuentra todas las parejas.";
   } catch (error) {
@@ -126,7 +138,10 @@ function descubrirCarta(carta, nombre) {
 
 function finalizarPartida() {
   terminada = true;
-  mensaje.textContent = "¡Partida terminada! Has encontrado todas las parejas.";
+  clearInterval(temporizador);
+  const tiempo = segundosTranscurridos();
+  reloj.textContent = formatearTiempo(tiempo);
+  mensaje.textContent = `¡Partida terminada! Has encontrado todas las parejas en ${formatearTiempo(tiempo)}.`;
 }
 
 document.getElementById("partida-formulario").addEventListener("submit", (event) => {
@@ -140,3 +155,7 @@ document.getElementById("partida-formulario").addEventListener("submit", (event)
   iniciarPartida(Number(valor));
 });
 
+
+function formatearTiempo(segundos) {
+  return `${Math.floor(segundos / 60)}m ${segundos % 60}s`;
+}
