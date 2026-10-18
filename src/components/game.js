@@ -54,6 +54,7 @@ async function iniciarPartida(numeroCartas) {
   cancelarPartida();
   cartasPartida = numeroCartas;
   const partidaActual = numeroPartida;
+  botonReiniciar.disabled = false;
   mensaje.textContent = "Cargando los Pokémon de la partida...";
   try {
     const pokemon = await obtenerPokemonAleatorios(numeroCartas / 2);
@@ -155,6 +156,9 @@ document.getElementById("partida-formulario").addEventListener("submit", (event)
   iniciarPartida(Number(valor));
 });
 
+botonReiniciar.addEventListener("click", () => {
+  if (cartasPartida > 0) iniciarPartida(cartasPartida);
+});
 
 function formatearTiempo(segundos) {
   return `${Math.floor(segundos / 60)}m ${segundos % 60}s`;
