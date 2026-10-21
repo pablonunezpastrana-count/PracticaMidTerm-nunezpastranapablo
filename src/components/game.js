@@ -1,4 +1,5 @@
 import { obtenerPokemonAleatorios, mezclar } from "../api/pokeApi.js";
+import { guardarResultado, formatearTiempo } from "../servicios/historial.js";
 
 const tablero = document.getElementById("tablero");
 const mensaje = document.getElementById("mensaje-juego");
@@ -7,6 +8,7 @@ const contadorParejas = document.getElementById("parejas");
 const botonReiniciar = document.getElementById("reiniciar");
 const MIN_CARTAS = 10;
 const MAX_CARTAS = 20;
+let jugador = null;
 let numeroPartida = 0;
 let cartasPartida = 0;
 let parejasEncontradas = 0;
@@ -17,8 +19,9 @@ let inicio = 0;
 let temporizador = null;
 let esperaCartas = null;
 
-export function prepararJuego() {
+export function prepararJuego(usuario) {
   cancelarPartida();
+  jugador = usuario;
   mensaje.textContent = "Elige el número de cartas para empezar.";
 }
 
@@ -143,6 +146,12 @@ function finalizarPartida() {
   const tiempo = segundosTranscurridos();
   reloj.textContent = formatearTiempo(tiempo);
   mensaje.textContent = `¡Partida terminada! Has encontrado todas las parejas en ${formatearTiempo(tiempo)}.`;
+  try {
+    guardarResultado(jugador, tiempo, cartasPartida);
+  } catch (error) {
+    mensaje.textContent += " No se pudo guardar el resultado en el navegador.";
+    console.error(error);
+  }
 }
 
 document.getElementById("partida-formulario").addEventListener("submit", (event) => {
@@ -159,7 +168,3 @@ document.getElementById("partida-formulario").addEventListener("submit", (event)
 botonReiniciar.addEventListener("click", () => {
   if (cartasPartida > 0) iniciarPartida(cartasPartida);
 });
-
-function formatearTiempo(segundos) {
-  return `${Math.floor(segundos / 60)}m ${segundos % 60}s`;
-}
