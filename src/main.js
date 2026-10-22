@@ -1,6 +1,7 @@
 import "./styles.css";
 import { iniciarPerfil } from "./components/profile.js";
 import { prepararJuego, cancelarPartida } from "./components/game.js";
+import { mostrarRanking } from "./components/ranking.js";
 import {
   guardarUsuarioEnSesion,
   obtenerUsuarioDeSesion,
@@ -19,6 +20,7 @@ function entrarAlJuego(usuario) {
   imagen.src = usuario.pokemon.imagen;
   imagen.alt = usuario.pokemon.nombre;
   prepararJuego(usuario);
+  mostrarRanking();
 }
 
 iniciarPerfil((usuario) => {
@@ -38,5 +40,3 @@ if (usuarioSesion) {
   entrarAlJuego(usuarioSesion);
 }
 
-
-document.getElementById("seccion-ranking").hidden = true;

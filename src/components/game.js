@@ -1,5 +1,6 @@
 import { obtenerPokemonAleatorios, mezclar } from "../api/pokeApi.js";
 import { guardarResultado, formatearTiempo } from "../servicios/historial.js";
+import { mostrarRanking } from "./ranking.js";
 
 const tablero = document.getElementById("tablero");
 const mensaje = document.getElementById("mensaje-juego");
@@ -147,7 +148,8 @@ function finalizarPartida() {
   reloj.textContent = formatearTiempo(tiempo);
   mensaje.textContent = `¡Partida terminada! Has encontrado todas las parejas en ${formatearTiempo(tiempo)}.`;
   try {
-    guardarResultado(jugador, tiempo, cartasPartida);
+    const id = guardarResultado(jugador, tiempo, cartasPartida);
+    mostrarRanking(id);
   } catch (error) {
     mensaje.textContent += " No se pudo guardar el resultado en el navegador.";
     console.error(error);
