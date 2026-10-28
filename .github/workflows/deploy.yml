@@ -1,0 +1,37 @@
+name: Deploy a GitHub Pages
+
+on:
+  push:
+    branches: ['main']     # se ejecuta en cada push a main
+  workflow_dispatch:       # permite lanzarlo a mano desde la pestaña Actions
+
+permissions:
+  contents: read
+  pages: write             # permiso para publicar en Pages
+  id-token: write          # necesario para autenticar el despliegue
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true # si haces dos push seguidos, cancela el anterior
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      
+uses: actions/checkout@v7          # descarga tu código
+uses: actions/setup-node@v7        # instala Node
+    with:
+      node-version: lts/*
+      cache: 'npm'
+run: npm ci                        # instala dependencias
+run: npm run build                 # genera dist/
+uses: actions/configure-pages@v6
+uses: actions/upload-pages-artifact@v5
+with:
+  path: './dist'                   # sube SOLO la carpeta compilada
+id: deployment
+uses: actions/deploy-pages@v5      # la publica
