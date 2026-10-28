@@ -4,6 +4,9 @@
 
 **Repositorio:** PracticaMidTerm-nunezpastranapablo
 
+**URL aplicación desplegada:** https://pablonunezpastrana-count.github.io/PracticaMidTerm-nunezpastranapablo/
+
+
 # PracticaMidTerm-nunezpastranapablo
 # PokeMemory
 
